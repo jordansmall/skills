@@ -38,7 +38,11 @@ Completion: every issue sits in a wave, and no issue precedes its blocker.
 Spawn **one `sonnet` worker per issue** and dispatch the current wave's workers
 concurrently. Hand each worker only its issue; it owns the whole pipeline and
 returns only an outcome, so the orchestrator's context stays flat no matter how
-wide the wave. Each worker runs these stages in order — do not skip or reorder:
+wide the wave. The worker spawns and receives **both** its own subagents — the
+`haiku` scout and the `opus` reviewer — one level down; their maps, diffs, and
+review findings live and die inside the worker, and only the final outcome
+crosses back up to the orchestrator. The orchestrator never touches scout or
+review traffic. Each worker runs these stages in order — do not skip or reorder:
 
 1. **Claim** — relabel `ready-for-agent` → `agent-in-progress` as the first
    action, before any code. This hands over the baton and stops a second worker
