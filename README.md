@@ -15,6 +15,9 @@ shared or third-party skills repo), get committed, then symlinked into
 - **orchestrate-issues** — orchestrate an AFK agent fleet that clears
   `ready-for-agent` GitHub issues end to end: order by dependency, then per
   issue claim, scout, build test-first, review, and merge.
+- **release-notes** — turn a `CHANGELOG.md` into a skimmable `RELEASE_NOTES.md`,
+  one section per version with a theme, a breaking-change status line, and
+  plain-language highlights.
 
 ## Adding a skill
 
