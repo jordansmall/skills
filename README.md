@@ -11,7 +11,8 @@ shared or third-party skills repo), get committed, then symlinked into
 ## Skills
 
 - **commit** — write git commit messages in strict Conventional Commits v1.0.0
-  with hard line wraps.
+  with hard line wraps (72 hard, 50 soft for subjects), plus a
+  `scripts/check-msg.sh` linter.
 - **orchestrate-issues** — orchestrate an AFK agent fleet that clears
   `ready-for-agent` GitHub issues end to end: order by dependency, then per
   issue claim, scout, build test-first, review, and merge.
