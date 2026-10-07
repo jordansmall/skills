@@ -80,7 +80,9 @@ range of versions. Sub-agents don't see this skill, so give each one:
   ```
 
 Then assemble, and do a final consistency pass over voice, label style and
-punctuation, since several authors wrote the pieces.
+punctuation, since several authors wrote the pieces. Sub-agents sometimes
+embellish (a motive, an example command, a number) that the changelog never
+states, so spot-check concrete specifics against the source before they go in.
 
 For a small changelog (or an update adding one or two versions), just read the
 relevant slice yourself.
@@ -107,14 +109,23 @@ Newest version first. Each version section is:
   changes, exactly one of:
   - `No breaking changes.`
   - `**⚠ Breaking changes** this release: <short reason>.`
-- **Highlights:** 2–7 bullets. Fewer for small releases; a one-paragraph blurb
-  with no bullets is fine for a tiny release. Lead each bullet with a short
-  bold label ending in a period, then a sentence or two in plain terms.
+- **Highlights:** 2–7 bullets. Fewer for small releases. A tiny release can
+  swap the bullets for a one-paragraph blurb, but it still keeps its theme and
+  breaking-status lines, so every section scans the same way. Lead each bullet
+  with a short bold label ending in a period, then a sentence or two in plain
+  terms.
 
-Flag the actual breaking items inline too, with a `**⚠ Breaking:**` lead on the
-bullet, and make sure every version with a breaking status line has at least
-one such bullet (and versions with `No breaking changes.` have none). For each
-breaking bullet, say what the reader may need to do, if anything.
+Flag the actual breaking items inline too, written exactly like this:
+
+```
+- **⚠ Breaking: `count` is now `tally`.** Update scripts and aliases that
+  call `tallyho count`.
+```
+
+Every version with a breaking status line has at least one such bullet, and
+versions with `No breaking changes.` have none. For each breaking bullet, say
+what the reader may need to do, if anything. In update mode, if the existing
+file already uses a different breaking-bullet style, match it instead.
 
 ## What to keep and what to cut
 
@@ -144,6 +155,12 @@ Short. A line on what the tool is and who the notes are for, then:
 Business-casual, like a developer leaving a note for teammates. Be to the
 point; add detail only where it helps.
 
+**Hard-wrap prose at 80 columns**, with bullet continuation lines indented two
+spaces to line up under the bullet text. The file gets read raw in terminals,
+editors and diffs as often as it gets rendered, and long lines are miserable
+there. Headers and lines that are mostly a URL can run long. In update mode,
+wrap the sections you add even if older sections aren't wrapped.
+
 Avoid the usual LLM tells:
 
 - Overly formal or passive phrasing.
@@ -163,4 +180,6 @@ Avoid the usual LLM tells:
 - **Breaking consistency:** each version's status line agrees with its bullets.
 - **Em-dashes:** `grep -o '—' RELEASE_NOTES.md | wc -l` equals the number of
   version sections.
+- **Wrapping:** `awk 'length > 80' RELEASE_NOTES.md` shows only headers or URL
+  lines (plus untouched older sections in update mode).
 - **Update mode:** `git diff RELEASE_NOTES.md` shows only added lines.
