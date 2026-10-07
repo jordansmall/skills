@@ -67,4 +67,24 @@ for ((i = 1; i < ${#lines[@]}; i++)); do
   err "line $((i + 1)) is ${#line} chars; wrap body/footers at 72"
 done
 
+# git only parses the final paragraph as trailers, so a blank line inside
+# the footer block silently demotes everything above it to body text.
+trailer_re='^(BREAKING CHANGE|[A-Za-z][A-Za-z-]*)(: | #)'
+all_trailers() {
+  local l
+  for l in "$@"; do [[ $l =~ $trailer_re ]] || return 1; done
+}
+end=${#lines[@]}
+while ((end > 2)) && [[ -z ${lines[end - 1]} ]]; do end=$((end - 1)); done
+start=$end
+while ((start > 2)) && [[ -n ${lines[start - 1]} ]]; do start=$((start - 1)); done
+if ((start > 2)) && all_trailers "${lines[@]:start:end-start}"; then
+  prev_end=$((start - 1))
+  prev_start=$prev_end
+  while ((prev_start > 2)) && [[ -n ${lines[prev_start - 1]} ]]; do prev_start=$((prev_start - 1)); done
+  if ((prev_end > prev_start)) && all_trailers "${lines[@]:prev_start:prev_end-prev_start}"; then
+    err "footers must be one block; remove the blank line at line $((prev_end + 1))"
+  fi
+fi
+
 ((errors == 0))

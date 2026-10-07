@@ -38,7 +38,9 @@ convention (readable `git log --oneline`, 80-column terminals) layered on top.
   `BREAKING CHANGE: <desc>` footer (the token MUST be uppercase).
 - **body** — optional; starts one blank line after the description. Explains
   what and why, not how. Skip it when the subject says everything.
-- **footers** — one blank line after the body. Either `Token: value` or
+- **footers** — one blank line after the body, then a single block with no
+  blank lines inside it (git only parses the last paragraph as trailers, so a
+  gap demotes everything above it to body text). Either `Token: value` or
   `Token #value` (e.g. `Closes #42`, `Refs #17`). Tokens use `-` instead of
   spaces (`Reviewed-by:`), except `BREAKING CHANGE`. Put `BREAKING CHANGE`
   first, issue refs next, and trailers your environment requires (e.g.
@@ -63,6 +65,11 @@ formal or passive phrasing, exhaustive enumeration of every change, restating th
 diff, "per ADR-XXXX" name-drops, and em-dash pile-ups. Plain sentences beat
 polished ones.
 
+Write whole sentences, the way you would explain the change out loud. "Add a
+test that retries until the lock frees up" reads like a person; "Retry until
+lock frees" reads like a changelog bullet. Clipped,
+subject-less fragments are the most common way a message stops sounding human.
+
 ## Granularity
 
 When you are committing, prefer several small, logical commits over one large
@@ -79,14 +86,17 @@ Avoid `-m "..."`, which invites one unwrapped line, and stacked `-m` flags.
 git commit -F - <<'EOF'
 fix(auth): refresh token before expiry
 
-Tokens minted near the hour boundary expired mid-request. Refresh
-when less than five minutes remain instead of waiting for a 401.
+Tokens minted near the hour boundary were expiring mid-request, so the
+first call after the boundary failed with a 401. Now we refresh when
+less than five minutes remain.
 
 Closes #42
 EOF
 ```
 
-Then lint what landed and amend if it reports an error (warnings are advisory):
+Settle the subject length before you commit. Then lint what landed and amend
+only if it reports an **error**. A warning you already weighed, like a 55-char
+subject that needs every word, is not a reason to amend:
 
 ```sh
 git log -1 --format=%B | bash <skill-dir>/scripts/check-msg.sh
@@ -94,7 +104,7 @@ git log -1 --format=%B | bash <skill-dir>/scripts/check-msg.sh
 
 `<skill-dir>` is this skill's directory. The script checks the prefix, subject
 length (error over 72, warning over 50), trailing period, blank second line,
-and 72-column wrapping with the exemptions above.
+72-column wrapping with the exemptions above, and a split footer block.
 
 ## Examples
 
@@ -115,3 +125,16 @@ Bad → good:
   `fix(parser): handle empty input`
 - `fix(schema): fix continuousDispatch doc pointer` →
   `docs(schema): correct continuousDispatch pointer`
+
+Body tone, clipped → whole sentences:
+
+```
+Cover lock contention. Retry on EBUSY, give up after 5s, no sleep in
+happy path.
+```
+
+```
+Add a test for lock contention. The cache now retries on EBUSY and
+gives up after five seconds, and the test checks the happy path never
+sleeps so the suite stays fast.
+```

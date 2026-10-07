@@ -73,6 +73,30 @@ expect "repeated type word warns" 0 'warn: .*repeats' 'fix(schema): fix doc poin
 
 expect "empty message" 1 'error: .*empty' ''
 
+expect "footers split by blank line" 1 'error: .*footers.*one block' 'fix: handle empty input
+
+Explain why here.
+
+Refs: #1879
+
+Co-Authored-By: Claude <noreply@anthropic.com>'
+
+expect "footer-only message split by blank line" 1 'error: .*footers.*one block' 'chore: bump deps
+
+Refs #12
+
+Co-Authored-By: Claude <noreply@anthropic.com>'
+
+expect "trailing blank lines after footers ok" 0 '^$' 'fix: handle empty input
+
+Explain why here.
+
+Refs #1879
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+
+'
+
 tmp=$(mktemp)
 printf 'chore: bump deps\n' >"$tmp"
 if bash "$check" "$tmp" >/dev/null 2>&1; then echo "ok   file argument"; else echo "FAIL file argument"; fails=$((fails + 1)); fi
