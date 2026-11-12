@@ -28,6 +28,10 @@ shared or third-party skills repo), get committed, then symlinked into
 - **release-notes** — turn a `CHANGELOG.md` into a skimmable `RELEASE_NOTES.md`,
   one section per version with a theme, a breaking-change status line, and
   plain-language highlights.
+- **spindrift-run-usage** — break a spindrift dispatch's pass log down by pass,
+  model, and subagent (context sizes, cache reads and writes, output), and check
+  a "Run usage" issue comment against it; ships a `scripts/run-usage.sh`
+  reporter.
 
 ## Adding a skill
 
